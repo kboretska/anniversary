@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Наш Рік Разом — 🎉</title>
-  <meta name="description" content="Маленький сайтик-подарунок до річниці: спогади, галерея, міні-гра та приховані сюрпризи." />
+  <meta name="description" content="Маленький сайтик-подарунок до річниці: спогади, галерея, та приховані сюрпризи." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <style>
@@ -69,11 +69,6 @@
     .modal{padding:20px}
     dialog::backdrop{background:rgba(0,0,0,.6)}
 
-    /* Міні-гра */
-    #game{background:rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.18); border-radius:16px; padding:14px}
-    #game canvas{width:100%; height:320px; background:radial-gradient(800px 300px at 50% -20%, rgba(155,135,245,.2), transparent), radial-gradient(600px 250px at 20% 120%, rgba(255,119,170,.15), transparent), #0b0f1d; border-radius:12px}
-    .game-ui{display:flex; justify-content:space-between; align-items:center; margin:8px 0 0}
-
     /* Футер */
     footer{margin:30px 0 60px; text-align:center; color:var(--muted)}
 
@@ -89,12 +84,11 @@
     <header class="hero">
       <span class="badge">💜 Рік разом</span>
       <h1>Катя × Олексій — версія 1.0</h1>
-      <p class="sub">Маленький святковий сайт про наше кохання: спогади, фото, міні-гра про бадмінтон і прихований сюрприз. Натискай кнопки нижче ✨</p>
+      <p class="sub">Маленький святковий сайт про наше кохання: спогади, фото і прихований сюрприз. Натискай кнопки нижче ✨</p>
       <div class="cta-row">
         <button class="btn primary" onclick="document.getElementById('letter').showModal()">Відкрити лист</button>
         <button class="btn" onclick="scrollToId('memories')">Спогади</button>
         <button class="btn" onclick="scrollToId('gallery')">Галерея</button>
-        <button class="btn" onclick="scrollToId('minigame')">Міні-гра</button>
         <button class="btn ghost" id="easterBtn" title="секрет">↑↑↓↓←→←→BA</button>
       </div>
 
@@ -108,7 +102,7 @@
         </div>
         <div class="card">
           <h3>Мета на наступний рік</h3>
-          <p class="muted">Щонайменше 3 поїздки, 10 спільних матчів з бадмінтону і 1 спільний пет-проєкт 🛠️</p>
+          <p class="muted">Щонайменше 3 поїздки, 10 спільних заходів і 1 спільний пет-проєкт 🛠️</p>
         </div>
         <div class="card">
           <h3>Маленькі досягнення</h3>
@@ -144,21 +138,6 @@
       </div>
     </section>
 
-    <section id="minigame">
-      <h2>Міні-гра «Піймай волан» 🏸</h2>
-      <div id="game">
-        <canvas id="gameCanvas" width="800" height="320" aria-label="Міні-гра"></canvas>
-        <div class="game-ui">
-          <div>Очки: <strong id="score">0</strong> · Час: <strong id="time">30</strong> с</div>
-          <div>
-            <button class="btn" id="startBtn">Старт</button>
-            <button class="btn ghost" id="resetBtn">Скинути</button>
-          </div>
-        </div>
-        <p class="muted" style="margin:10px 0 0">Керування: мишка або пальцем — торкайся волана, щоб зловити. Спробуй побити рекорд!</p>
-      </div>
-    </section>
-
     <footer>
       З любов’ю, Катя · <span id="year"></span>
     </footer>
@@ -180,14 +159,11 @@
   </dialog>
 
   <script>
-    // === НАЛАШТУВАННЯ (замінити під себе) ===
-    const START_DATE = new Date('2024-10-08'); // Дата, від коли ви разом (YYYY-MM-DD)
+    const START_DATE = new Date('2024-10-08');
     const NAMES = { her: 'Катя', him: 'Олексій' };
 
-    // — Сервісні функції
     function scrollToId(id){ document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'}); }
 
-    // — Лічильник днів
     function renderDays(){
       const now = new Date();
       const diff = Math.floor((now - START_DATE) / (1000*60*60*24));
@@ -198,7 +174,6 @@
     }
     renderDays();
 
-    // — Лайтбокс для галереї (простий)
     document.getElementById('galleryGrid').addEventListener('click', (e)=>{
       if(e.target.tagName!=='IMG') return;
       const src = e.target.src;
@@ -208,7 +183,6 @@
       document.body.appendChild(dlg); dlg.showModal();
     });
 
-    // — Конфеті-сердечка
     function heartAt(x,y){
       const el = document.createElement('div');
       el.className='heart';
@@ -230,73 +204,6 @@
       }
     }
 
-    // — Міні-гра: клікни по волану
-    ;(function(){
-      const canvas = document.getElementById('gameCanvas');
-      const ctx = canvas.getContext('2d');
-      const scoreEl = document.getElementById('score');
-      const timeEl = document.getElementById('time');
-      const startBtn = document.getElementById('startBtn');
-      const resetBtn = document.getElementById('resetBtn');
-
-      let shuttles = []; let playing=false; let score=0; let time=30; let timerId=null; let raf=null;
-
-      function drawShuttle(s){
-        // простий волан: овал + перо
-        ctx.save();
-        ctx.translate(s.x, s.y); ctx.rotate(s.r);
-        // головка
-        ctx.fillStyle = '#e5e7eb';
-        ctx.beginPath(); ctx.ellipse(0,0,10,6,0,0,Math.PI*2); ctx.fill();
-        // пера
-        ctx.strokeStyle = '#c7d2fe'; ctx.lineWidth = 2;
-        for(let i=0;i<4;i++){
-          ctx.beginPath(); ctx.moveTo(-2,0); ctx.lineTo(-18, -10 + i*6); ctx.stroke();
-        }
-        ctx.restore();
-      }
-      function spawn(){
-        const x = 20 + Math.random()*(canvas.width-40);
-        shuttles.push({ x, y:-20, r: (Math.random()*0.4-0.2), vy: 1.5+Math.random()*1.2, vr: (Math.random()*0.04-0.02) });
-      }
-      function step(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        if(Math.random()<0.04) spawn();
-        shuttles.forEach(s=>{ s.y += s.vy; s.r += s.vr; });
-        shuttles = shuttles.filter(s=> s.y < canvas.height+30);
-        shuttles.forEach(drawShuttle);
-        raf = requestAnimationFrame(step);
-      }
-      function start(){ if(playing) return; playing=true; score=0; time=30; shuttles=[]; scoreEl.textContent=0; timeEl.textContent=time; step();
-        timerId=setInterval(()=>{ time--; timeEl.textContent=time; if(time<=0){ stop(); celebrate(); alert(`Фініш! Твій рахунок: ${score}`); } },1000);
-      }
-      function stop(){ playing=false; clearInterval(timerId); cancelAnimationFrame(raf); }
-      function reset(){ stop(); ctx.clearRect(0,0,canvas.width,canvas.height); score=0; time=30; shuttles=[]; scoreEl.textContent=0; timeEl.textContent=30; }
-
-      function hit(x,y){
-        for(let i=0;i<shuttles.length;i++){
-          const s = shuttles[i];
-          const dx = s.x - x, dy = s.y - y; // приблизне потрапляння
-          if(Math.hypot(dx,dy) < 18){
-            score+=1; scoreEl.textContent=score; heartAt(x,y);
-            shuttles.splice(i,1); return;
-          }
-        }
-      }
-      canvas.addEventListener('click', e=>{
-        const rect = canvas.getBoundingClientRect();
-        hit(e.clientX-rect.left, e.clientY-rect.top);
-      });
-      canvas.addEventListener('touchstart', e=>{
-        const rect = canvas.getBoundingClientRect(); const t = e.touches[0];
-        hit(t.clientX-rect.left, t.clientY-rect.top);
-      }, {passive:true});
-
-      startBtn.addEventListener('click', start);
-      resetBtn.addEventListener('click', reset);
-    })();
-
-    // — Консольні «реліз-ноти» (пасхалка) через Konami-code
     (function(){
       const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
       let pos=0;
