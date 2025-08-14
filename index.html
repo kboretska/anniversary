@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Наш Рік Разом — 🎉</title>
-  <meta name="description" content="Маленький сайтик-подарунок до річниці: спогади, галерея, та приховані сюрпризи." />
+  <meta name="description" content="Маленький сайтик-подарунок до річниці: спогади, галерея та приховані сюрпризи." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg: #0f1220;
-      --card: #192ca8;
+      --card: #141833;
       --muted: #98a2b3;
       --text: #e6e7ee;
       --accent: #9b87f5; /* лавандовий */
@@ -77,6 +77,19 @@
     .heart:before,.heart:after{content:""; position:absolute; width:14px; height:14px; background:var(--accent-2); border-radius:50%}
     .heart:before{left:-7px}
     .heart:after{top:-7px}
+
+    /* ===== Квіз ===== */
+    .quiz-container{
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .question{ margin-bottom: 18px; }
+    .quiz-container label{ display:block; margin:6px 0; cursor:pointer; }
+    .result{ margin-top:16px; font-size:18px; font-weight:700; }
   </style>
 </head>
 <body>
@@ -89,6 +102,7 @@
         <button class="btn primary" onclick="document.getElementById('letter').showModal()">Відкрити лист</button>
         <button class="btn" onclick="scrollToId('memories')">Спогади</button>
         <button class="btn" onclick="scrollToId('gallery')">Галерея</button>
+        <button class="btn" onclick="scrollToId('quiz-section')">Квіз</button>
         <button class="btn ghost" id="easterBtn" title="секрет">↑↑↓↓←→←→BA</button>
       </div>
 
@@ -119,7 +133,7 @@
       <h2>Наш таймлайн</h2>
       <div class="timeline">
         <div class="tl-item"><strong>Перша зустріч:</strong> <span class="muted">[впишемо дату]</span> — розгублені, але щасливі 😊</div>
-        <div class="tl-item"><strong>Перший спільний матч:</strong> <span class="muted">[впишемо зал/місце]</span> — хтось хитро сервісував 🏸</div>
+        <div class="tl-item"><strong>Перший спільний момент:</strong> <span class="muted">[зал/місце]</span> — хтось хитро посміхався 😏</div>
         <div class="tl-item"><strong>Найсмішніший момент:</strong> <span class="muted">[коротко опиши]</span></div>
         <div class="tl-item"><strong>Найтепліший вечір:</strong> <span class="muted">[де і чому]</span></div>
       </div>
@@ -135,6 +149,33 @@
         <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop" alt="Разом 4" />
         <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=1200&auto=format&fit=crop" alt="Разом 5" />
         <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1200&auto=format&fit=crop" alt="Разом 6" />
+      </div>
+    </section>
+
+    <!-- КВІЗ -->
+    <section id="quiz-section">
+      <h2>Квіз: Наскільки добре ти знаєш Катю?</h2>
+      <div class="quiz-container" id="quiz">
+        <div class="question">
+          <p>1. Який мій улюблений напій?</p>
+          <label><input type="radio" name="q1" value="0"> Кава</label>
+          <label><input type="radio" name="q1" value="1"> Чай</label>
+          <label><input type="radio" name="q1" value="0"> Лимонад</label>
+        </div>
+        <div class="question">
+          <p>2. Де ми вперше зустрілися?</p>
+          <label><input type="radio" name="q2" value="1"> [Твоя відповідь]</label>
+          <label><input type="radio" name="q2" value="0"> Випадково в магазині</label>
+          <label><input type="radio" name="q2" value="0"> У спортзалі</label>
+        </div>
+        <div class="question">
+          <p>3. Який мій улюблений спорт?</p>
+          <label><input type="radio" name="q3" value="0"> Баскетбол</label>
+          <label><input type="radio" name="q3" value="1"> Бадмінтон</label>
+          <label><input type="radio" name="q3" value="0"> Плавання</label>
+        </div>
+        <button class="btn primary" onclick="checkQuiz()">Перевірити результат</button>
+        <div class="result muted" id="result"></div>
       </div>
     </section>
 
@@ -159,11 +200,13 @@
   </dialog>
 
   <script>
+    // === НАЛАШТУВАННЯ ===
     const START_DATE = new Date('2024-10-08');
     const NAMES = { her: 'Катя', him: 'Олексій' };
 
     function scrollToId(id){ document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'}); }
 
+    // лічильник днів
     function renderDays(){
       const now = new Date();
       const diff = Math.floor((now - START_DATE) / (1000*60*60*24));
@@ -174,6 +217,7 @@
     }
     renderDays();
 
+    // простий лайтбокс
     document.getElementById('galleryGrid').addEventListener('click', (e)=>{
       if(e.target.tagName!=='IMG') return;
       const src = e.target.src;
@@ -183,6 +227,7 @@
       document.body.appendChild(dlg); dlg.showModal();
     });
 
+    // конфеті-сердечка
     function heartAt(x,y){
       const el = document.createElement('div');
       el.className='heart';
@@ -204,6 +249,24 @@
       }
     }
 
+    // КВІЗ: підрахунок + автоконфеті
+    function checkQuiz() {
+      let score = 0;
+      const totalQuestions = 3;
+      for(let i = 1; i <= totalQuestions; i++) {
+        const answer = document.querySelector(`input[name=q${i}]:checked`);
+        if(answer) score += parseInt(answer.value);
+      }
+      const resultEl = document.getElementById('result');
+      if(score === totalQuestions) {
+        resultEl.textContent = `Вау! ${score}/${totalQuestions} — ти знаєш мене ідеально! 💖`;
+        celebrate(); // запуск сердечок при максимумі
+      } else {
+        resultEl.textContent = `${score}/${totalQuestions} — є ще над чим працювати 😉`;
+      }
+    }
+
+    // пасхалка: Konami-code
     (function(){
       const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
       let pos=0;
